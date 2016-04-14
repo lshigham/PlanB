@@ -8,4 +8,4 @@
 * Outline project
 * Create Python Source Directory
 * Create Plan B Document Directory
-
+* Get something done, dammit!
