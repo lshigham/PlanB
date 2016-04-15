@@ -14,6 +14,6 @@ class Exotic_option(object):
         self.expiry = expiry
         
     def payoff(self):
-        pass
+        pass 
     
 
