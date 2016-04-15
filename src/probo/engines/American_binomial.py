@@ -16,14 +16,14 @@ class American_binomial(PricingEngine):
     def calculate(self, option):
         if(option.payoffType is PayoffType.call):
             for i in range(node_number):
-                spot_T = option.spot * (u ** (nreps - i)) * (d ** (i))
-                call_T += option.Call_binomial_payoff(spot_T, strike) * binom.pmf(nreps - i, nreps, pu)
+                spot_T = spot * (u ** (nreps - i)) * (d ** (i))
+                call_T += option.payoff(spot_T, strike) * binom.pmf(nreps - i, nreps, pu)
             call_price = call_T * np.exp(-rate * expiry)
             return call_price
         elif(option.payoffType is PayoffType.put):
             for i in range(node_number):
-                spot_T = option.spot * (u ** (nreps - i)) * (d ** (i))
-                put_T += option.Put_binomial_payoff(spot_T, strike) * binom.pmf(nreps - i, nreps, pd)
+                spot_T = spot * (u ** (nreps - i)) * (d ** (i))
+                put_T += option.payoff(spot_T, strike) * binom.pmf(nreps - i, nreps, pd)
             put_price = put_T * np.exp(-rate * expiry)
             return put_price
         else:
