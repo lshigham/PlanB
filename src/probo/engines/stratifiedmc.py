@@ -9,7 +9,7 @@ class Stratified_mc(PricingEngine):
     def __init__(self, nreps):
         self.__nreps = nreps
 
-    def strat_mc(self, option):
+    def calculate(self, option):
         rate, spot, sigma, div = option.marketData
         disc = np.exp(rate * option.expiry)
         dt = option.expiry 
@@ -32,3 +32,4 @@ class Stratified_mc(PricingEngine):
         se = Ct.std(dtype = np.float64) / np.sqrt(nreps)
 
         return Ct
+        
