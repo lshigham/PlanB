@@ -19,7 +19,7 @@ def call_payoff(name, spot):
 def put_payoff(name, spot):
     return np.maximum(name.strike - spot, 0.0)
 
-## main
+## main  __name__ == "__main__":
 call_option = VanillaOption(40.0, 1.0, call_payoff)
 put_option = VanillaOption(40.0, 1.0, put_payoff)
 spot1 = 42.0
