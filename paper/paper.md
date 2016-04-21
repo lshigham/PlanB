@@ -10,7 +10,7 @@ In a world of finance, it is increasingly necessary to obtain programming skills
 
 - Brief Background of me/why decided to do this project or EM?
 - Things I did?  (maybe part of abstract?)
-- I will be able to roll this over to my job directly
+- I will be able to roll this concept and even possibly the implementation over to my job directly
 - All the different ways this is possible?  More than one, and tell about the the methods implemented
 - Explain the importance of why? (lead into next PP)
 
@@ -20,7 +20,7 @@ In a world of finance, it is increasingly necessary to obtain programming skills
 - Working at Equity Methods, where the company helps clients model, value, and account for equity compensation instruments and other complex securities I will implement what I've learned in object-oriented programming (OOP) techniques to help the company increase overall efficiency.
 - For instance, EM designs, values, provides audit support, and continually tracks Relative Total Shareholder Return (TSR) awards, which can be very unique depending on circumstances.  Although unique, there are multiple common steps and concepts that can be combined using OOP and design patterns to increase the efficiency.
 - Maybe a few more examples of EM's services and how it would benefit from OOP or why it benefits me to learn OOP.
-- Standard
+- Standard in the programming world.  
 - 
 
 
