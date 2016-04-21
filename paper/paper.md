@@ -55,6 +55,6 @@ In a world of finance, it is increasingly necessary to obtain programming skills
 
 
 ## What Else?
-UML 
+- UML 
 - Endless possibilities and variations.
 - 
