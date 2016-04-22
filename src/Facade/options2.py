@@ -88,11 +88,11 @@ class BinomialPricingEngine(PricingEngine):
         return self.__pricer(self, option, data)
 
     
-def EuropeanBinomialPricer(pricing_engine, option, data):
+def EuropeanBinomialPricer(engine, option, data):
     expiry = option.expiry
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()
-    steps = pricing_engine.steps
+    steps = engine.steps
     nodes = steps + 1
     dt = expiry / steps 
     u = np.exp((rate * dt) + volatility * np.sqrt(dt)) 
@@ -148,7 +148,7 @@ class MarketData(object):
 
     @volatility.setter
     def volatility(self, new_volatility):
-        self.__volatility = new_olatility
+        self.__volatility = new_volatility
 
     @property
     def dividend(self):
