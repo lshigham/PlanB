@@ -1,7 +1,5 @@
-import marketData 
 import payoff 
 import pricingEngine
-import Facade
 
 def main():
     strike = 40.0
@@ -13,9 +11,9 @@ def main():
     dividend = 0.0
     steps = 500 
 
-    call = Vanilla_Payoff(expiry, strike, black_scholes_call_payoff)
+    call = Vanilla_Payoff(expiry, strike, payoff.black_scholes_call_payoff)
     data = MarketData(rate, spot, volatility, dividend)
-    bs_engine = BlackScholesPricingEngine(steps, Black_Scholes_Pricer)
+    bs_engine = pricingEngine.BlackScholesPricingEngine(steps, pricingEngine.Black_Scholes_Pricer)
     
     the_option = OptionFacade(call, bs_engine, data)
     price = the_option.price()

@@ -134,7 +134,7 @@ def Black_Scholes_Pricer(engine, option, data):
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()
     d1 = (np.log(spot/strike) + (rate - dividend + 0.5 * volatility * volatility) * expiry) / (volatility * np.sqrt(expiry))
-    d2 = d1 - sigma * np.sqrt(expiry)
+    d2 = d1 - volatility * np.sqrt(expiry)
 
 class MonteCarloPricingEngine(Pricing_Engine):
     def __init__(self, steps, pricer):
@@ -154,18 +154,19 @@ class MonteCarloPricingEngine(Pricing_Engine):
         
         
 def Naive_Monte_Carlo_Pricer(engine, option, data):
-    expiry = option.expriy
+    expiry = option.expiry
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()
+    steps = engine.steps
     discount_rate = np.exp(rate * expiry)
     delta_t = expiry
-    z = np.random.normal(size=self.__steps)
+    z = np.random.normal(size = steps)
     
     nudt = (rate - 0.5 * volatility * volatility) * delta_t
     sidt = volatility * np.sqrt(delta_t)
     
-    spot_t = np.zeros((self.__steps, ))
-    payoff_t = np.zeros((self.__steps, ))
+    spot_t = np.zeros((steps, ))
+    payoff_t = np.zeros((steps, ))
     spot_t = spot * np.exp(nudt + sidt * z)
     payoff_t = option.payoff(spot_t)
     price = discount_rate * payoff_t.mean()
