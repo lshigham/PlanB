@@ -81,34 +81,6 @@ def AmericanBinomialPricer(engine, option, data):
     price = discount_rate * payoffs     
     
     return price
-    # CH18
-        
-#
-# Implements binomial method for an American put.
-#from numpy import *
-###### Problem and method parameters #########
-#S = 3.; E = 4.; #T = 1.;# r = 0.05; #sigma = 0.3
-#M = 400; dt = T/M; p =0.5 
-#u = exp(sigma*sqrt(dt) + (r-0.5*sigma**2)*dt)
-#d = exp(-sigma*sqrt(dt) + (r-0.5*sigma**2)*dt)
-#print 'S, E, T, r, sigma=',S, E, T, r, sigma
-#print 'M, dt, p=',M, dt,p
-#print 'u, d=',u,d
-##################################
-
-# Initial computations
-#dpowers = d**range(M,-1,-1)
-#upowers = u**range(0,M+1)
-#W = maximum(E-S*dpowers*upowers,0)
-#print 'W=',W
-# Work back to option value at time zero
-#for i in range(M,0,-1):  # i=M, M-1, .., 1#
-#    di=dpowers[M-i+1:M+1]
-#    ui=upowers[0:i]
-#    Si = S*di*ui
-#    W = maximum(maximum(E-Si,0),exp(-r*dt)*(p*W[1:i+1]+(1-p)*W[0:i]))
-#print 'Option value is',W
-
 
 
 class BlackScholesPricingEngine(Pricing_Engine):
