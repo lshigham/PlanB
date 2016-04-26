@@ -1,6 +1,6 @@
 import abc
 import numpy as np
-from scipy.stats import binom
+from scipy.stats import binom, norm
 import Facade
 
 class Pricing_Engine(object, metaclass=abc.ABCMeta):
@@ -83,6 +83,8 @@ def AmericanBinomialPricer(engine, option, data):
     return price
 
 
+
+
 class BlackScholesPricingEngine(Pricing_Engine):
     def __init__(self, steps, pricer):
         self.__steps = steps
@@ -142,5 +144,51 @@ def Naive_Monte_Carlo_Pricer(engine, option, data):
     spot_t = spot * np.exp(nudt + sidt * z)
     payoff_t = option.payoff(spot_t)
     price = discount_rate * payoff_t.mean()
+    
+    return price
+    
+def Stratified_Monte_Carlo_Pricer(engine, option, data):
+    expiry = option.expiry
+    strike = option.strike
+    (spot, rate, volatility, dividend) = data.get_data()
+    steps = engine.steps
+    discount_rate = np.exp(-rate * expiry)
+    delta_t = expiry
+    
+    nudt = (rate - 0.5 * volatility * volatility) * delta_t
+    sidt = volatility * np.sqrt(delta_t)
+    
+    spot_t = np.zeros((steps, ))
+    payoff_t = np.zeros((steps, ))
+    
+    for i in range(steps):
+        u = np.random.uniform(size = 1)
+        u_hat = (i + u) / steps
+        z = norm.ppf(u_hat)
+        spot_t[i] = spot * np.exp(nudt + sidt * z)
+        payoff_t[i] = option.payoff(spot_t[i])
+        
+    price = discount_rate * payoff_t.mean()
+    
+    return price
+    
+def Antithetic_Monte_Carlo_Pricer(engine, option, data):
+    expiry = option.expiry
+    strike = option.strike
+    (spot, rate, volatility, dividend) = data.get_data()   
+    steps = engine.steps
+    discount_rate = np.exp(-rate * expiry)
+    delta_t = expiry
+    z = np.random.normal(size = steps)
+
+    nudt = (rate - 0.5 * volatility * volatility) * delta_t
+    sidt = volatility * np.sqrt(delta_t)    
+    
+    spot_t_antithetic = np.zeros((steps, ))
+    payoff_t_antithetic = np.zeros((steps, ))
+    spot_t_antithetic = spot * np.exp(nudt - sidt * z)
+    payoff_t_antithetic = option.payoff(spot_t_antithetic)
+    
+    price = discount_rate * payoff_t_antithetic.mean()
     
     return price

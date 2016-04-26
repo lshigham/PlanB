@@ -13,7 +13,7 @@ def main():
 
     call = VanillaOption(expiry, strike, payoff.monte_carlo_call_payoff)
     data = MarketData(rate, spot, volatility, dividend)
-    mc_engine = pricingEngine.MonteCarloPricingEngine(steps, pricingEngine.Naive_Monte_Carlo_Pricer)
+    mc_engine = pricingEngine.MonteCarloPricingEngine(steps, pricingEngine.Stratified_Monte_Carlo_Pricer)
     
     the_option = OptionFacade(call, mc_engine, data)
     price = the_option.price()
