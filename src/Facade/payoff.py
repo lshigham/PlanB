@@ -85,3 +85,15 @@ class Exotic_Payoff(Facade.OptionFacade):
 
     def payoff(self, spot):
         return self.__payoff(self, spot)
+        
+def asian_call_payoff(option, spot):
+    return np.maximum(option.strike - spot, 0.0)
+    
+def asian_put_payoff(option, spot):
+    return np.maximum(spot - option.strike, 0.0)
+    
+def lookback_call_payoff(option, spot):
+    return np.maximum(option.strike - spot, 0.0)
+    
+def lookback_put_payoff(option, spot):
+    return np.maximum(spot - option.strike, 0.0)

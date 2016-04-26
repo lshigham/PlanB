@@ -11,9 +11,9 @@ def main():
     dividend = 0.0
     steps = 500 
 
-    call = Vanilla_Payoff(expiry, strike, payoff.black_scholes_call_payoff)
+    call = Exotic_Payoff(expiry, strike, payoff.asian_call_payoff)
     data = MarketData(rate, spot, volatility, dividend)
-    bs_engine = pricingEngine.BlackScholesPricingEngine(steps, pricingEngine.Black_Scholes_Pricer)
+    bs_engine = pricingEngine.MonteCarloPricingEngine(steps, pricingEngine.Asian_Option_Pricer)
     
     the_option = OptionFacade(call, bs_engine, data)
     price = the_option.price()
