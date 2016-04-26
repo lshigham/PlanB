@@ -68,3 +68,19 @@ The field of finance best suits those that have a love and appreciation for math
 print("Hello, World!")
 ```
 
+And here is some command line output for a tested model:
+
+```
+root@DESKTOP-L2VJTA7:/mnt/c/Users/brough/Desktop# python jake.py
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+Hello, World!
+```
+
