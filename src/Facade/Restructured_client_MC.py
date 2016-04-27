@@ -9,9 +9,9 @@ def main():
     rate = 0.08
     volatility = 0.30
     dividend = 0.0
-    steps = 500 
+    steps = 1000 
 
-    call = VanillaOption(expiry, strike, payoff.monte_carlo_call_payoff)
+    call = VanillaOption(expiry, strike, payoff.call_payoff)
     data = MarketData(rate, spot, volatility, dividend)
     mc_engine = pricingEngine.MonteCarloPricingEngine(steps, pricingEngine.Naive_Monte_Carlo_Pricer)
     
