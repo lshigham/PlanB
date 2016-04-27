@@ -67,23 +67,36 @@ def AmericanBinomialPricer(engine, option, data):
     d = np.exp((rate * delta_t) - volatility * np.sqrt(delta_t))
     pu = (np.exp(rate * delta_t) - d) / (u - d)
     pd = 1 - pu
-    disc = np.exp(-rate * expiry)
+    #pu = 0.5 + 0.5 * (nu * delta_t / dxu)
+    
+    #disc = np.exp(-rate * expiry)
     discount_rate = np.exp(-rate * delta_t)
-    spot_T = 0.0
-    down_states = d**range(steps, -1, -1)
-    up_states = u ** range(0, steps + 1)
-    payoffs = 0.0
+    nu = rate - 0.5 * volatility * volatility
+    dxu = np.sqrt(volatility * volatility * delta_t + nu*nu*delta_t*delta_t)
+    dxd = -dxu
+    dpu = discount_rate * pu
+    dpd = discount_rate * pd
+    edxud = np.exp(dxu - dxd)
+    edxd = np.exp(dxd)
     
+    spot_t = []
+    payoff_t = []
+    spot_t.append(spot * np.exp(steps * dxd))
+    #for a put -- need to generalize
+    payoff_t.append(np.maximum(0.0, strike - spot_t[0]))
+    for j in range(steps):
+        spot_t.append(spot_t[-1] * edxud)
+        payoff_t.append(np.maximum(0.0, strike - spot_t[j+1]))
     
-    for i in range(steps, 0, -1):
-        spot_i = spot * (u ** (steps - i)) * (d ** (i))
-        payoffs += option.payoff(spot_i) * binom.pmf(steps - i, steps, pu)
-    price = discount_rate * payoffs     
-    
+    for i in range(steps-1, -1, -1):
+        for j in range(i+1):
+            payoff_t[j] = dpd*payoff_t[j] + dpu * payoff_t[j+1]
+            spot_t[j] = spot_t[j]/edxd
+            
+            payoff_t[j] = np.maximum(payoff_t[j], strike - spot_t[j])
+            
+    price = discount_rate * payoff_t[j]
     return price
-
-
-
 
 class BlackScholesPricingEngine(Pricing_Engine):
     def __init__(self, steps, pricer):
