@@ -26,7 +26,6 @@ class Vanilla_Payoff(Facade.OptionFacade):
 
     def payoff(self, spot):
         return self.__payoff(self, spot)
-
     
 def call_payoff(option, spot):
     return np.maximum(spot - option.strike, 0.0)
@@ -35,8 +34,8 @@ def put_payoff(option, spot):
     return np.maximum(option.strike - spot, 0.0)
 
 # Need to fix bugs    
-def black_scholes_call_payoff(option, spot, data):
-    price = spot * np.exp(-data.dividend * option.expiry) * norm.cdf(d1) - option.strike * np.exp(data.rate * option.expiry) * norm.cdf(d2)
+def black_scholes_call_payoff(option, spot, data, engine):
+    price = spot * np.exp(-data.dividend * option.expiry) * norm.cdf(engine.d1) - option.strike * np.exp(data.rate * option.expiry) * norm.cdf(engine.d2)
     return price
 
 def black_scholes_put_payoff(option, spot, engine, data):
@@ -68,14 +67,8 @@ class Exotic_Payoff(Facade.OptionFacade):
     def payoff(self, spot):
         return self.__payoff(self, spot)
         
-def asian_call_payoff(option, spot):
-    return np.maximum(option.strike - spot, 0.0)
-    
-def asian_put_payoff(option, spot):
-    return np.maximum(spot - option.strike, 0.0)
-    
-def lookback_call_payoff(option, spot):
-    return np.maximum(option.strike - spot, 0.0)
-    
-def lookback_put_payoff(option, spot):
-    return np.maximum(spot - option.strike, 0.0)
+def arithmetic_asian_call_payoff(option, spot):
+    pass
+
+def arithmetic_asian_put_payoff(option, spot):
+    pass

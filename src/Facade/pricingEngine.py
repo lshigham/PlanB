@@ -114,36 +114,44 @@ def Black_Scholes_Pricer(engine, option, data):
     return price
     
 class MonteCarloPricingEngine(Pricing_Engine):
-    def __init__(self, steps, pricer):
-        self.__steps = steps
+    def __init__(self, replications, time_steps, pricer):
+        self.__replications = replications
+        self.__time_steps = time_steps
         self.__pricer = pricer
 
     @property
-    def steps(self):
-        return self.__steps
+    def replications(self):
+        return self.__replications
 
-    @steps.setter
-    def steps(self, new_steps):
-        self.__steps = new_steps
+    @replications.setter
+    def replications(self, new_replications):
+        self.__replications = new_replications
+
+    @property
+    def time_steps(self):
+        return self.__time_steps
+
+    @time_steps.setter
+    def time_steps(self, new_time_steps):
+        self.__time_steps = new_time_steps
     
     def calculate(self, option, data):
-        return self.__pricer(self, option, data)
-        
+        return self.__pricer(self, option, data)     
         
 def Naive_Monte_Carlo_Pricer(engine, option, data):
     expiry = option.expiry
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()
-    steps = engine.steps
+    time_steps = engine.time_steps
     discount_rate = np.exp(rate * expiry)
-    delta_t = expiry
-    z = np.random.normal(size = steps)
+    delta_t = expiry / engine.time_steps
+    z = np.random.normal(size = time_steps)
     
     nudt = (rate - 0.5 * volatility * volatility) * delta_t
     sidt = volatility * np.sqrt(delta_t)
     
-    spot_t = np.zeros((steps, ))
-    payoff_t = np.zeros((steps, ))
+    spot_t = np.zeros((engine.replications, ))
+    payoff_t = np.zeros((engine.replications, ))
     spot_t = spot * np.exp(nudt + sidt * z)
     payoff_t = option.payoff(spot_t)
     price = discount_rate * payoff_t.mean()
@@ -154,19 +162,19 @@ def Stratified_Monte_Carlo_Pricer(engine, option, data):
     expiry = option.expiry
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()
-    steps = engine.steps
+    time_steps = engine.time_steps
     discount_rate = np.exp(-rate * expiry)
-    delta_t = expiry
+    delta_t = expiry / time_steps
     
     nudt = (rate - 0.5 * volatility * volatility) * delta_t
     sidt = volatility * np.sqrt(delta_t)
     
-    spot_t = np.zeros((steps, ))
-    payoff_t = np.zeros((steps, ))
+    spot_t = np.zeros((engine.replications, ))
+    payoff_t = np.zeros((engine.replications, ))
     
-    for i in range(steps):
+    for i in range(time_steps):
         u = np.random.uniform(size = 1)
-        u_hat = (i + u) / steps
+        u_hat = (i + u) / time_steps
         z = norm.ppf(u_hat)
         spot_t[i] = spot * np.exp(nudt + sidt * z)
         payoff_t[i] = option.payoff(spot_t[i])
@@ -179,17 +187,17 @@ def Antithetic_Monte_Carlo_Pricer(engine, option, data):
     expiry = option.expiry
     strike = option.strike
     (spot, rate, volatility, dividend) = data.get_data()   
-    steps = engine.steps
+    time_steps = engine.time_steps
     discount_rate = np.exp(-rate * expiry)
-    delta_t = expiry
-    z = np.random.normal(size = steps)
+    delta_t = expiry / time_steps
+    z = np.random.normal(size = time_steps)
     z = np.concatenate((z, -z))
 
     nudt = (rate - 0.5 * volatility * volatility) * delta_t
     sidt = volatility * np.sqrt(delta_t)    
     
-    spot_t_antithetic = np.zeros((steps, ))
-    payoff_t_antithetic = np.zeros((steps, ))
+    spot_t_antithetic = np.zeros((engine.replications, ))
+    payoff_t_antithetic = np.zeros((engine.replications, ))
     spot_t_antithetic = spot * np.exp(nudt + sidt * z)
     payoff_t_antithetic = option.payoff(spot_t_antithetic)
     
@@ -197,10 +205,49 @@ def Antithetic_Monte_Carlo_Pricer(engine, option, data):
     
     return price
 
+def BlackScholesDelta(spot, t, strike, expiry, volatility, rate, dividend):
+    tau = expiry - t
+    d1 = (np.log(spot/strike) + (rate - dividend + 0.5 * volatility * volatility) * tau) / (volatility * np.sqrt(tau))
+    delta = np.exp(-dividend * tau) * norm.cdf(d1) 
+    return delta
+    
+def ControlVariatePricer(engine, option, data):
+    expiry = option.expiry
+    strike = option.strike
+    (spot, rate, volatility, dividend) = data.get_data()
+    dt = expiry / engine.time_steps
+    nudt = (rate - dividend - 0.5 * volatility * volatility) * dt
+    sigsdt = volatility * np.sqrt(dt)
+    erddt = np.exp((rate - dividend) * dt)    
+    beta = -1.0
+    cash_flow_t = np.zeros((engine.replications, ))
+    price = 0.0
+
+    for j in range(engine.replications):
+        spot_t = spot
+        convar = 0.0
+        z = np.random.normal(size=int(engine.time_steps))
+
+        for i in range(int(engine.time_steps)):
+            t = i * dt
+            delta = BlackScholesDelta(spot, t, strike, expiry, volatility, rate, dividend)
+            spot_tn = spot_t * np.exp(nudt + sigsdt * z[i])
+            convar = convar + delta * (spot_tn - spot_t * erddt)
+            spot_t = spot_tn
+
+        cash_flow_t[j] = option.payoff(spot_t) + beta * convar
+
+    price = np.exp(-rate * expiry) * cash_flow_t.mean()
+    #stderr = cash_flow_t.std() / np.sqrt(engine.replications)
+    return price
 
 # Do I want to make a path dependent class?
 # If so, what will I want to include?
-    
+
+
+
+##### Extensions  
+  
 def Asian_Option_Pricer(engine, option, data):
     expiry = option.expiry
     strike = option.strike
