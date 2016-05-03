@@ -87,21 +87,11 @@ def AmericanBinomialPricer(engine, option, data):
     return price
       
 class BlackScholesPricingEngine(Pricing_Engine):
-    def __init__(self, steps, pricer):
-        self.__steps = steps
+    def __init__(self, pricer):
         self.__pricer = pricer
-
-    @property
-    def steps(self):
-        return self.__steps
-
-    @steps.setter
-    def steps(self, new_steps):
-        self.__steps = new_steps
-    
+   
     def calculate(self, option, data):
         return self.__pricer(self, option, data)
-
 
 # Need to fix bugs
 def Black_Scholes_Pricer(engine, option, data):
@@ -110,7 +100,7 @@ def Black_Scholes_Pricer(engine, option, data):
     (spot, rate, volatility, dividend) = data.get_data()
     d1 = (np.log(spot/strike) + (rate - dividend + 0.5 * volatility * volatility) * expiry) / (volatility * np.sqrt(expiry))
     d2 = d1 - volatility * np.sqrt(expiry)
-    price = option.payoff(spot)
+    price = option.payoff(spot, rate, volatility, dividend, d1, d2)
     return price
     
 class MonteCarloPricingEngine(Pricing_Engine):
